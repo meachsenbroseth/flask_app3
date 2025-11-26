@@ -8,3 +8,4 @@ class Config:
         or "sqlite:///" + os.path.join(BASE_DIR, "instance\\users.db")
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+

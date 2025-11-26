@@ -24,3 +24,4 @@ def create_app(config_class: type[Config] = Config):
         db.create_all()
 
     return app
+

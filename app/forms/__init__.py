@@ -1,2 +1,2 @@
-from .user_forms import UserCreateForm, UserEditFrom
-from .user_forms import ConfirmDeleteFrom
+from .user_forms import UserCreateForm, UserEditForm
+from .user_forms import ConfirmDeleteForm
