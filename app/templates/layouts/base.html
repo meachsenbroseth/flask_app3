@@ -10,7 +10,9 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-    {% block extra_css %}{% endblock %}
+    <!-- google font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=dark_mode" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=light" />  
 </head>
 
 <body>
@@ -19,6 +21,12 @@
             <a class="navbar-brand" href="{{ url_for('users.index') }}">
                 User Management
             </a>
+        </div>
+        <div id="dark-mode">
+            <span class="material-symbols-outlined" id="darkMode">dark_mode</span>
+        </div>
+        <div id="light-mode">
+            <span class="material-symbols-outlined" id="lightMode">light</span>
         </div>
     </nav>
 
