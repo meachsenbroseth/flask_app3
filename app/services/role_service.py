@@ -42,3 +42,4 @@ class RoleService:
     def delete(role: Role) -> None:
         db.session.delete(role)
         db.session.commit()
+

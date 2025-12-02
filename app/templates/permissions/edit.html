@@ -1,9 +1,10 @@
 {% extends "layouts/base.html" %}
-{% block title %}Create User{% endblock %}
+{% block title %}Edit Permission{% endblock %}
 
 {% block content %}
-<h1>Edit User</h1>
-<form method="post" novalidate>
-    {% include "users/_form.html" %}
+<h2 class="mb-4">Edit Permission</h2>
+
+<form method="POST">
+    {% include "permissions/_form.html" %}
 </form>
 {% endblock %}

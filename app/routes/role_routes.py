@@ -7,76 +7,93 @@ from flask import (
     abort,
 )
 
-from app.forms.user_forms import UserCreateForm, UserEditForm, ConfirmDeleteForm
-from app.services.user_service import UserService
+from app.forms.role_forms import RoleCreateForm, RoleEditForm
+from app.forms.user_forms import ConfirmDeleteForm   # You already have this form
+from app.models.permission import Permission
+from app.services.role_service import RoleService
 
-user_bp = Blueprint("users", __name__, url_prefix="/users")
+role_bp = Blueprint("roles", __name__, url_prefix="/roles")
 
-@user_bp.route("/")
+
+@role_bp.route("/")
 def index():
-    users = UserService.get_all()
-    return render_template("users/index.html", users=users)
+    roles = RoleService.get_all()
+    return render_template("roles/index.html", roles=roles)
 
-@user_bp.route("/<int:user_id>")
-def detail(user_id: int):
-    user = UserService.get_by_id(user_id)
-    if user is None:
+
+@role_bp.route("/<int:role_id>")
+def detail(role_id: int):
+    role = RoleService.get_by_id(role_id)
+    if role is None:
         abort(404)
-    return render_template("users/detail.html", user=user)
+    return render_template("roles/detail.html", role=role)
 
-@user_bp.route("/create", methods=["GET", "POST"])
+
+@role_bp.route("/create", methods=["GET", "POST"])
 def create():
-    form = UserCreateForm()
-    if form.validate_on_submit():
-        data = {
-            "username": form.username.data,
-            "email": form.email.data,
-            "full_name": form.full_name.data,
-            "is_active": form.is_active.data,
-        }
-        password = form.password.data
-        user = UserService.create(data, password)
-        flash(f"User '{user.username}' was created successfully.", "success")
-        return redirect(url_for("users.index"))
+    form = RoleCreateForm()
 
-    return render_template("users/create.html", form=form)
-
-@user_bp.route("/<int:user_id>/edit", methods=["GET", "POST"])
-def edit(user_id: int):
-    user = UserService.get_by_id(user_id)
-    if user is None:
-        abort(404)
-
-    form = UserEditForm(original_user=user, obj=user)
+    # Load permission list
+    all_permissions = Permission.query.all()
+    form.permissions.choices = [(p.id, p.name) for p in all_permissions]
+    permission_map = {p.id: p for p in all_permissions}
 
     if form.validate_on_submit():
         data = {
-            "username": form.username.data,
-            "email": form.email.data,
-            "full_name": form.full_name.data,
-            "is_active": form.is_active.data,
+            "name": form.name.data,
+            "description": form.description.data,
+            "permissions": form.permissions.data,
         }
-        password = form.password.data or None
-        UserService.update(user, data, password)
-        flash(f"User '{user.username}' was updated successfully.", "success")
-        return redirect(url_for("users.detail", user_id=user.id))
+        role = RoleService.create(data)
+        flash(f"Role '{role.name}' was created successfully.", "success")
+        return redirect(url_for("roles.index"))
 
-    return render_template("users/edit.html", form=form, user=user)
+    return render_template("roles/create.html", form=form, permission_map=permission_map)
 
-@user_bp.route("/<int:user_id>/delete", methods=["GET"])
-def delete_confirm(user_id: int):
-    user = UserService.get_by_id(user_id)
-    if user is None:
+
+@role_bp.route("/<int:role_id>/edit", methods=["GET", "POST"])
+def edit(role_id: int):
+    role = RoleService.get_by_id(role_id)
+    if role is None:
         abort(404)
+
+    form = RoleEditForm(original_role=role, obj=role)
+
+    # Load permission list
+    all_permissions = Permission.query.all()
+    form.permissions.choices = [(p.id, p.name) for p in all_permissions]
+    form.permissions.data = [p.id for p in role.permissions]
+    permission_map = {p.id: p for p in all_permissions}
+
+    if form.validate_on_submit():
+        data = {
+            "name": form.name.data,
+            "description": form.description.data,
+            "permissions": form.permissions.data,
+        }
+        RoleService.update(role, data)
+        flash(f"Role '{role.name}' was updated successfully.", "success")
+        return redirect(url_for("roles.detail", role_id=role.id))
+
+    return render_template("roles/edit.html", form=form, role=role, permission_map=permission_map)
+
+
+@role_bp.route("/<int:role_id>/delete", methods=["GET"])
+def delete_confirm(role_id: int):
+    role = RoleService.get_by_id(role_id)
+    if role is None:
+        abort(404)
+
     form = ConfirmDeleteForm()
-    return render_template("users/delete_confirm.html", user=user, form=form)
+    return render_template("roles/delete_confirm.html", role=role, form=form)
 
-@user_bp.route("/<int:user_id>/delete", methods=["POST"])
-def delete(user_id: int):
-    user = UserService.get_by_id(user_id)
-    if user is None:
+
+@role_bp.route("/<int:role_id>/delete", methods=["POST"])
+def delete(role_id: int):
+    role = RoleService.get_by_id(role_id)
+    if role is None:
         abort(404)
 
-    UserService.delete(user)
-    flash("User was deleted successfully.", "success")
-    return redirect(url_for("users.index"))
+    RoleService.delete(role)
+    flash("Role was deleted successfully.", "success")
+    return redirect(url_for("roles.index"))
