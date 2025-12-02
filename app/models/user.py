@@ -1,9 +1,10 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask_login import UserMixin
 from extensions import db
+from app.models.associations import user_roles
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "users"
     
     id = db.Column(db.Integer, primary_key=True)
@@ -22,10 +23,15 @@ class User(db.Model):
         nullable=False
     )
     
+    roles = db.relationship("Role", secondary=user_roles, back_populates="users")
+    
     def set_password(self, password: str) -> None:
         self.password_hash= generate_password_hash(password)
     def check_password(self,password: str) -> bool:
         return check_password_hash(self.password_hash,password)
-    
+    def has_role(self, role_name: str) -> bool:
+        return any(role.name == role_name for role in self.roles)
+    def get_permission_codes(self) -> set[str]:
+        return {perm.code for role in self.roles for perm in role.permissions}
     def __repr__(self):
         return f"<User {self.username}>" 
