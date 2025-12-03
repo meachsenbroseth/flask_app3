@@ -25,7 +25,7 @@
             <tbody>
                 {% for perm in permissions %}
                 <tr>
-                    <td>{{ perm.code }}</td>
+                    <td><a href="{{ url_for('permissions.detail', permission_id=perm.id) }}">{{ perm.code }}</a></td>
                     <td>{{ perm.name }}</td>
                     <td>{{ perm.module }}</td>
                     <td class="text-muted">{{ perm.description or "" }}</td>
@@ -33,14 +33,11 @@
                     <td>{{ perm.roles|length }}</td>
 
                     <td class="text-end">
-                        <a href="{{ url_for('permissions.detail', permission_id=perm.id) }}"
-                           class="btn btn-sm btn-info me-1">View</a>
-
                         <a href="{{ url_for('permissions.edit', permission_id=perm.id) }}"
-                           class="btn btn-sm btn-warning me-1">Edit</a>
+                           class="btn btn-sm btn-outline-secondary">Edit</a>
 
                         <a href="{{ url_for('permissions.delete_confirm', permission_id=perm.id) }}"
-                           class="btn btn-sm btn-danger">Delete</a>
+                           class="btn btn-sm btn-outline-danger">Delete</a>
                     </td>
                 </tr>
                 {% else %}
