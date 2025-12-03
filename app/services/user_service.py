@@ -1,5 +1,6 @@
 from typing import List, Optional
 from app.models.user import User
+from app.models.role import Role
 from extensions import db
 
 class UserService:
@@ -13,13 +14,18 @@ class UserService:
 
     @staticmethod
     def create(data: dict, password: str) -> User:
+        role_ids = data.get("roles", [])
+        roles = Role.query.filter(Role.id.in_(role_ids)).all()
+
         user = User(
             username=data["username"],
             email=data["email"],
             full_name=data["full_name"],
             is_active=data.get("is_active", True),
+            roles=roles
         )
         user.set_password(password)
+
         db.session.add(user)
         db.session.commit()
         return user
@@ -30,6 +36,10 @@ class UserService:
         user.email = data["email"]
         user.full_name = data["full_name"]
         user.is_active = data.get("is_active", True)
+
+        # Update roles (IMPORTANT!)
+        role_ids = data.get("roles", [])
+        user.roles = Role.query.filter(Role.id.in_(role_ids)).all()
 
         if password:
             user.set_password(password)

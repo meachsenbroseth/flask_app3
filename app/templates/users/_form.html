@@ -1,74 +1,103 @@
 {{ form.hidden_tag() }}
 
-<div class="mb-3">
-  {{ form.username.label(class="form-label") }}
-  {{ form.username(class="form-control") }}
-  {% if form.username.errors %}
-  <div class="text-danger small">
-    {% for error in form.username.errors %}
-      <div>{{ error }}</div>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
+<div class="card shadow-sm p-4">
 
-<div class="mb-3">
-  {{ form.email.label(class="form-label") }}
-  {{ form.email(class="form-control") }}
-  {% if form.email.errors %}
-  <div class="text-danger small">
-    {% for error in form.email.errors %}
-      <div>{{ error }}</div>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
+    <!-- USERNAME -->
+    <div class="mb-3">
+        {{ form.username.label(class="form-label fw-bold") }}
+        {{ form.username(class="form-control") }}
+        {% if form.username.errors %}
+        <div class="text-danger small">
+            {% for err in form.username.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
+    </div>
 
-<div class="mb-3">
-  {{ form.full_name.label(class="form-label") }}
-  {{ form.full_name(class="form-control") }}
-  {% if form.full_name.errors %}
-  <div class="text-danger small">
-    {% for error in form.full_name.errors %}
-      <div>{{ error }}</div>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
+    <!-- EMAIL -->
+    <div class="mb-3">
+        {{ form.email.label(class="form-label fw-bold") }}
+        {{ form.email(class="form-control") }}
+        {% if form.email.errors %}
+        <div class="text-danger small">
+            {% for err in form.email.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
+    </div>
 
-<div class="form-check mb-3">
-  {{ form.is_active(class="form-check-input") }}
-  {{ form.is_active.label(class="form-check-label") }}
-</div>
+    <!-- FULL NAME -->
+    <div class="mb-3">
+        {{ form.full_name.label(class="form-label fw-bold") }}
+        {{ form.full_name(class="form-control") }}
+        {% if form.full_name.errors %}
+        <div class="text-danger small">
+            {% for err in form.full_name.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
+    </div>
 
-{# Password fields (may be required or optional depending on form class) #}
-<div class="mb-3">
-  {{ form.password.label(class="form-label") }}
-  {{ form.password(class="form-control") }}
-  {% if form.password.errors %}
-  <div class="text-danger small">
-    {% for error in form.password.errors %}
-      <div>{{ error }}</div>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
+    <!-- ACTIVE STATUS -->
+    <div class="form-check mb-3">
+        {{ form.is_active(class="form-check-input") }}
+        {{ form.is_active.label(class="form-check-label fw-bold") }}
+    </div>
 
-<div class="mb-3">
-  {{ form.confirm_password.label(class="form-label") }}
-  {{ form.confirm_password(class="form-control") }}
-  {% if form.confirm_password.errors %}
-  <div class="text-danger small">
-    {% for error in form.confirm_password.errors %}
-      <div>{{ error }}</div>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
+    <!-- PASSWORD (for create or optional edit) -->
+    <div class="mb-3">
+        {{ form.password.label(class="form-label fw-bold") }}
+        {{ form.password(class="form-control") }}
+        {% if form.password.errors %}
+        <div class="text-danger small">
+            {% for err in form.password.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
+    </div>
 
-<div class="mt-4">
-  {{ form.submit(class="btn btn-primary") }}
-  <a href="{{ url_for('users.index') }}" class="btn btn-outline-secondary">
-    Cancel
-  </a>
+    <div class="mb-3">
+        {{ form.confirm_password.label(class="form-label fw-bold") }}
+        {{ form.confirm_password(class="form-control") }}
+        {% if form.confirm_password.errors %}
+        <div class="text-danger small">
+            {% for err in form.confirm_password.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ROLES SECTION -->
+    <div class="mb-3">
+        <label class="form-label fw-bold">Roles</label>
+
+        <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto;">
+
+            {% for value, label in form.roles.choices %}
+            <div class="form-check mb-1">
+                <input 
+                    class="form-check-input"
+                    type="checkbox"
+                    name="roles"
+                    value="{{ value }}"
+                    id="role_{{ value }}"
+                    {% if value in form.roles.data %}checked{% endif %}>
+                <label class="form-check-label" for="role_{{ value }}">
+                    {{ label }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if form.roles.errors %}
+        <div class="text-danger small">
+            {% for err in form.roles.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="d-flex justify-content-between mt-4">
+        <button class="btn btn-primary">{{ form.submit.label.text or "Save" }}</button>
+
+        <a href="{{ url_for('users.index') }}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </div>
+
 </div>

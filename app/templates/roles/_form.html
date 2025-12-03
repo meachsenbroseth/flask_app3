@@ -1,44 +1,87 @@
 {{ form.hidden_tag() }}
 
-<div class="mb-3">
-    {{ form.name.label(class="form-label") }}
-    {{ form.name(class="form-control") }}
-    {% if form.name.errors %}
-    <div class="text-danger small">
-        {% for error in form.name.errors %}
-            <div>{{ error }}</div>
-        {% endfor %}
-    </div>
-    {% endif %}
-</div>
+<div class="card shadow-sm p-4">
 
-<div class="mb-3">
-    {{ form.description.label(class="form-label") }}
-    {{ form.description(class="form-control", rows="3") }}
-    {% if form.description.errors %}
-    <div class="text-danger small">
-        {% for error in form.description.errors %}
-            <div>{{ error }}</div>
-        {% endfor %}
+    <!-- ROLE NAME -->
+    <div class="mb-3">
+        {{ form.name.label(class="form-label fw-bold") }}
+        {{ form.name(class="form-control", placeholder="Role name") }}
+        {% if form.name.errors %}
+        <div class="text-danger small">
+            {% for err in form.name.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-</div>
 
-<div class="mb-3">
-    {{ form.permissions.label(class="form-label") }}
-    {{ form.permissions(class="form-select", multiple=true, size=8) }}
-    {% if form.permissions.errors %}
-    <div class="text-danger small">
-        {% for error in form.permissions.errors %}
-            <div>{{ error }}</div>
-        {% endfor %}
+    <!-- DESCRIPTION -->
+    <div class="mb-3">
+        {{ form.description.label(class="form-label fw-bold") }}
+        {{ form.description(class="form-control", rows="3", placeholder="Short description (optional)") }}
+        {% if form.description.errors %}
+        <div class="text-danger small">
+            {% for err in form.description.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
-</div>
 
-<div class="mt-4">
-    {{ form.submit(class="btn btn-primary") }}
-    <a href="{{ url_for('roles.index') }}" class="btn btn-outline-secondary">
-        Cancel
-    </a>
+    <!-- PERMISSIONS -->
+    <div class="mb-3">
+        <label class="form-label fw-bold">Permissions</label>
+
+        <div class="border rounded p-3" style="max-height: 350px; overflow-y: auto;">
+            
+            {% set grouped = {} %}
+
+            {# GROUP PERMISSIONS BY MODULE #}
+            {% for value, label in form.permissions.choices %}
+                {% set perm = permission_map[value] %}
+                {% set module = perm.module.upper() %}
+                {% if module not in grouped %}
+                    {% set _ = grouped.update({module: []}) %}
+                {% endif %}
+                {% set _ = grouped[module].append((value, perm)) %}
+            {% endfor %}
+
+            {# RENDER GROUPS #}
+            {% for module, perms in grouped.items() %}
+                <div class="mb-3">
+                    <div class="fw-bold text-uppercase small text-muted">
+                        {{ module }}
+                    </div>
+
+                    {% for value, perm in perms %}
+                    <div class="form-check mb-1">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="perm_{{ value }}"
+                               name="{{ form.permissions.name }}"
+                               value="{{ value }}"
+                               {% if value in form.permissions.data %}checked{% endif %}>
+
+                        <label class="form-check-label" for="perm_{{ value }}">
+                            <span class="text-primary">{{ perm.code }}</span> – {{ perm.name }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+        </div>
+
+        {% if form.permissions.errors %}
+        <div class="text-danger small">
+            {% for err in form.permissions.errors %}<div>{{ err }}</div>{% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="d-flex justify-content-between mt-4">
+        <button class="btn btn-primary">{{ form.submit.label.text }}</button>
+
+        <a href="{{ url_for('roles.index') }}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </div>
+
 </div>

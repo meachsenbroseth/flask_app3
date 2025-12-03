@@ -1,10 +1,11 @@
 import re
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField, SubmitField, PasswordField
+from wtforms import BooleanField, StringField, SubmitField, PasswordField, SelectMultipleField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 
 from app.models import User
 from extensions import db
+
 
 # ----- helpers -----
 
@@ -45,7 +46,7 @@ class UserCreateForm(FlaskForm):
         render_kw={"placeholder": "Enter full name"},
     )
     is_active = BooleanField("Active", default=True)
-
+    roles = SelectMultipleField("Roles", coerce=int)
     password = PasswordField(
         "Password",
         validators=[
@@ -96,6 +97,8 @@ class UserEditForm(FlaskForm):
         validators=[DataRequired(), Length(min=3, max=120)],
     )
     is_active = BooleanField("Active")
+    
+    roles = SelectMultipleField("Roles", coerce=int)
 
     # optional password - only change if filled
     password = PasswordField(

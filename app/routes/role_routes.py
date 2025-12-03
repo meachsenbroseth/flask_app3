@@ -29,6 +29,26 @@ def detail(role_id: int):
     return render_template("roles/detail.html", role=role)
 
 
+# @role_bp.route("/create", methods=["GET", "POST"])
+# def create():
+#     form = RoleCreateForm()
+
+#     # Load permission list
+#     all_permissions = Permission.query.all()
+#     form.permissions.choices = [(p.id, p.name) for p in all_permissions]
+#     permission_map = {p.id: p for p in all_permissions}
+
+#     if form.validate_on_submit():
+#         data = {
+#             "name": form.name.data,
+#             "description": form.description.data,
+#             "permissions": form.permissions.data,
+#         }
+#         role = RoleService.create(data)
+#         flash(f"Role '{role.name}' was created successfully.", "success")
+#         return redirect(url_for("roles.index"))
+
+#     return render_template("roles/create.html", form=form, permission_map=permission_map)
 @role_bp.route("/create", methods=["GET", "POST"])
 def create():
     form = RoleCreateForm()
@@ -37,6 +57,10 @@ def create():
     all_permissions = Permission.query.all()
     form.permissions.choices = [(p.id, p.name) for p in all_permissions]
     permission_map = {p.id: p for p in all_permissions}
+
+    # FIX: Prevent NoneType in the template
+    if not form.permissions.data:
+        form.permissions.data = []
 
     if form.validate_on_submit():
         data = {
@@ -51,6 +75,33 @@ def create():
     return render_template("roles/create.html", form=form, permission_map=permission_map)
 
 
+# @role_bp.route("/<int:role_id>/edit", methods=["GET", "POST"])
+# def edit(role_id: int):
+#     role = RoleService.get_by_id(role_id)
+#     if role is None:
+#         abort(404)
+
+#     form = RoleEditForm(original_role=role, obj=role)
+
+#     # Load permission list
+#     all_permissions = Permission.query.all()
+#     form.permissions.choices = [(p.id, p.name) for p in all_permissions]
+#     form.permissions.data = [p.id for p in role.permissions]
+#     permission_map = {p.id: p for p in all_permissions}
+
+#     if form.validate_on_submit():
+#         data = {
+#             "name": form.name.data,
+#             "description": form.description.data,
+#             "permissions": form.permissions.data,
+#         }
+#         RoleService.update(role, data)
+#         flash(f"Role '{role.name}' was updated successfully.", "success")
+#         return redirect(url_for("roles.detail", role_id=role.id))
+
+#     return render_template("roles/edit.html", form=form, role=role, permission_map=permission_map)
+from flask import request
+
 @role_bp.route("/<int:role_id>/edit", methods=["GET", "POST"])
 def edit(role_id: int):
     role = RoleService.get_by_id(role_id)
@@ -62,20 +113,28 @@ def edit(role_id: int):
     # Load permission list
     all_permissions = Permission.query.all()
     form.permissions.choices = [(p.id, p.name) for p in all_permissions]
-    form.permissions.data = [p.id for p in role.permissions]
     permission_map = {p.id: p for p in all_permissions}
+
+    # Only set the defaults on GET
+    if request.method == "GET":
+        form.permissions.data = [p.id for p in role.permissions]
 
     if form.validate_on_submit():
         data = {
             "name": form.name.data,
             "description": form.description.data,
-            "permissions": form.permissions.data,
+            "permissions": form.permissions.data,  # now returns correct POST values
         }
         RoleService.update(role, data)
         flash(f"Role '{role.name}' was updated successfully.", "success")
         return redirect(url_for("roles.detail", role_id=role.id))
 
-    return render_template("roles/edit.html", form=form, role=role, permission_map=permission_map)
+    return render_template(
+        "roles/edit.html",
+        form=form,
+        role=role,
+        permission_map=permission_map
+    )
 
 
 @role_bp.route("/<int:role_id>/delete", methods=["GET"])
