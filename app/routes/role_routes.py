@@ -11,11 +11,13 @@ from app.forms.role_forms import RoleCreateForm, RoleEditForm
 from app.forms.user_forms import ConfirmDeleteForm   # You already have this form
 from app.models.permission import Permission
 from app.services.role_service import RoleService
+from flask_login import login_required
 
 role_bp = Blueprint("roles", __name__, url_prefix="/roles")
 
 
 @role_bp.route("/")
+@login_required
 def index():
     roles = RoleService.get_all()
     return render_template("roles/index.html", roles=roles)

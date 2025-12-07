@@ -14,6 +14,7 @@ from app.forms.permission_forms import (
 )
 
 from app.services import PermissionService
+from flask_login import login_required
 
 
 permission_bp = Blueprint("permissions", __name__, url_prefix="/permissions")
@@ -23,6 +24,7 @@ permission_bp = Blueprint("permissions", __name__, url_prefix="/permissions")
 # LIST ALL PERMISSIONS
 # -----------------------------
 @permission_bp.route("/")
+@login_required
 def index():
     permissions = PermissionService.get_all()
     return render_template("permissions/index.html", permissions=permissions)
