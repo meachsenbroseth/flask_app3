@@ -46,6 +46,7 @@
 from flask import Flask, redirect, url_for
 from config import Config
 from extensions import db, csrf, login_manager
+from app.routes.auth_routes import auth_bp
 
 
 def create_app(config_class: type[Config] = Config):
@@ -78,6 +79,7 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
+    app.register_blueprint(auth_bp)
     # app.register_blueprint(auth_bp)
 
     # ---- Home Redirect ----

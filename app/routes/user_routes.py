@@ -96,10 +96,12 @@ from flask import (
 from app.forms.user_forms import UserCreateForm, UserEditForm, ConfirmDeleteForm
 from app.services.user_service import UserService
 from app.models.role import Role
+from flask_login import login_required
 
 user_bp = Blueprint("users", __name__, url_prefix="/users")
 
 @user_bp.route("/")
+@login_required
 def index():
     users = UserService.get_all()
     return render_template("users/index.html", users=users)
