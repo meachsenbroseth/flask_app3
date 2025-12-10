@@ -63,34 +63,35 @@
     </div>
 
     <!-- ROLES SECTION -->
-    <div class="mb-3">
-        <label class="form-label fw-bold">Roles</label>
+   <div class="mb-3">
+    <label class="form-label fw-bold">Roles</label>
 
-        <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto;">
-
+    <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto;">
+        <select 
+            name="roles" 
+            class="form-select" 
+            multiple 
+            size="8"
+            style="height: auto;"
+        >
             {% for value, label in form.roles.choices %}
-            <div class="form-check mb-1">
-                <input 
-                    class="form-check-input"
-                    type="checkbox"
-                    name="roles"
-                    value="{{ value }}"
-                    id="role_{{ value }}"
-                    {% if value in form.roles.data %}checked{% endif %}>
-                <label class="form-check-label" for="role_{{ value }}">
+                <option value="{{ value }}"
+                    {% if value in form.roles.data %}selected{% endif %}
+                >
                     {{ label }}
-                </label>
-            </div>
+                </option>
             {% endfor %}
-        </div>
-
-        {% if form.roles.errors %}
-        <div class="text-danger small">
-            {% for err in form.roles.errors %}<div>{{ err }}</div>{% endfor %}
-        </div>
-        {% endif %}
+        </select>
     </div>
 
+    {% if form.roles.errors %}
+    <div class="text-danger small">
+        {% for err in form.roles.errors %}
+            <div>{{ err }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
     <!-- BUTTONS -->
     <div class="d-flex justify-content-between mt-4">
         <button class="btn btn-primary">{{ form.submit.label.text or "Save" }}</button>
