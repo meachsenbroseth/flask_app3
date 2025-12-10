@@ -66,23 +66,15 @@
    <div class="mb-3">
     <label class="form-label fw-bold">Roles</label>
 
-    <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto;">
-        <select 
-            name="roles" 
-            class="form-select" 
-            multiple 
-            size="8"
-            style="height: auto;"
-        >
-            {% for value, label in form.roles.choices %}
-                <option value="{{ value }}"
-                    {% if value in form.roles.data %}selected{% endif %}
-                >
-                    {{ label }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
+    <select name="roles" class="form-select">
+        {% for value, label in form.roles.choices %}
+            <option value="{{ value }}"
+                {% if form.roles.data == value %}selected{% endif %}
+            >
+                {{ label }}
+            </option>
+        {% endfor %}
+    </select>
 
     {% if form.roles.errors %}
     <div class="text-danger small">
@@ -92,6 +84,7 @@
     </div>
     {% endif %}
 </div>
+
     <!-- BUTTONS -->
     <div class="d-flex justify-content-between mt-4">
         <button class="btn btn-primary">{{ form.submit.label.text or "Save" }}</button>
