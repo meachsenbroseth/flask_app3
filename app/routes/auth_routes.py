@@ -2,9 +2,49 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
 from app.forms.auth_forms import LoginForm, RegistrationForm
 from app.models.user import User
-from extensions import db
+from extensions import db, oauth
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
+
+# ---------------- Google OAuth ----------------
+
+@auth_bp.route("/google")
+def google_login():
+    redirect_uri = url_for("auth.google_callback", _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@auth_bp.route("/google/callback")
+def google_callback():
+    token = oauth.google.authorize_access_token()
+
+    # ✅ Authlib already verified & parsed the ID token
+    user_info = token["userinfo"]
+
+    email = user_info["email"]
+    full_name = user_info.get("name", "")
+    username = email.split("@")[0]
+
+    user = db.session.scalar(
+        db.select(User).filter(User.email == email)
+    )
+
+    if not user:
+        user = User(
+            username=username,
+            email=email,
+            full_name=full_name,
+            is_active=True,
+        )
+        user.set_password("GOOGLE_AUTH")
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+    flash("Logged in with Google", "success")
+    return redirect(url_for("users.index"))
+
+# ---------------- Email/Password Login ----------------
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -29,6 +69,8 @@ def login():
 
     return render_template("auth/login.html", form=form)
 
+# ---------------- Registration ----------------
+
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
@@ -42,7 +84,8 @@ def register():
         new_user = User(
             email=form.email.data,
             username=form.username.data,
-            full_name=form.full_name.data
+            full_name=form.full_name.data,
+            is_active=True,
         )
         new_user.set_password(form.password.data)
 
@@ -53,6 +96,8 @@ def register():
         return redirect(url_for("auth.login"))
 
     return render_template("auth/register.html", form=form)
+
+# ---------------- Logout ----------------
 
 @auth_bp.route("/logout")
 @login_required

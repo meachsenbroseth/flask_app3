@@ -35,3 +35,4 @@ class User(UserMixin, db.Model):
         return {perm.code for role in self.roles for perm in role.permissions}
     def __repr__(self):
         return f"<User {self.username}>" 
+    
