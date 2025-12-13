@@ -1,0 +1,84 @@
+{% extends "layouts/base.html" %}
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+
+        <h3 class="text-center mb-4">Create New Account</h3>
+
+        <div class="card shadow-sm p-4">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <!-- Username -->
+                <div class="mb-3">
+                    {{ form.username(class="form-control", placeholder="Username") }}
+                    {% if form.username.errors %}
+                        <div class="text-danger small">
+                            {% for err in form.username.errors %}
+                                <div>{{ err }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                    {{ form.full_name(class="form-control", placeholder="Full Name") }}
+                    {% if form.full_name.errors %}
+                        <div class="text-danger small">
+                            {% for err in form.full_name.errors %}
+                                <div>{{ err }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    {{ form.email(class="form-control", placeholder="Email") }}
+                    {% if form.email.errors %}
+                        <div class="text-danger small">
+                            {% for err in form.email.errors %}
+                                <div>{{ err }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    {{ form.password(class="form-control", placeholder="Password") }}
+                    {% if form.password.errors %}
+                        <div class="text-danger small">
+                            {% for err in form.password.errors %}
+                                <div>{{ err }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mb-3">
+                    {{ form.confirm_password(class="form-control", placeholder="Confirm Password") }}
+                    {% if form.confirm_password.errors %}
+                        <div class="text-danger small">
+                            {% for err in form.confirm_password.errors %}
+                                <div>{{ err }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    {{ form.submit.label.text }}
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
