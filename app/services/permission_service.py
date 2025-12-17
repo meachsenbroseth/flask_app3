@@ -17,6 +17,7 @@ class PermissionService:
             name=data["name"],
             code=data["code"],
             module=data.get("module"),
+            description = data.get("description"),
         )
 
         db.session.add(permission)
@@ -28,6 +29,7 @@ class PermissionService:
         permission.name = data["name"]
         permission.code = data["code"]
         permission.module = data.get("module")
+        permission.description = data.get("description")
 
         db.session.commit()
         return permission
